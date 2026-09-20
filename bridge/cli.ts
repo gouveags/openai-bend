@@ -20,10 +20,11 @@ const bridge = await startBridge({
     apiKey,
     baseURL: "https://api.openai.com/v1",
     maxRetries: 2,
+    logLevel: "off",
   }),
 });
 console.log(
-  `openai-bend 0.1.0 listening on 127.0.0.1:${bridge.port} (protocol 1)`,
+  `openai-bend 0.1.1 listening on 127.0.0.1:${bridge.port} (protocol 1)`,
 );
 for (const signal of ["SIGINT", "SIGTERM"] as const) {
   process.once(signal, () => {

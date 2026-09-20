@@ -4,9 +4,9 @@
 
 Write your application in Bend. Use OpenAI's official TypeScript SDK for the network connection. A small, authenticated companion process connects the two over localhost.
 
-[Examples](./examples) · [Source](https://github.com/gouveags/openai-bend) · [Report an issue](https://github.com/gouveags/openai-bend/issues)
+[Examples](./examples) · [Source](https://github.com/gouveags/openai-bend) · [Report an issue](https://github.com/gouveags/openai-bend/issues) · [Anthropic companion project](https://github.com/gouveags/anthropic-bend)
 
-> Experimental v0.1.0. This is a community project, not an official OpenAI or Bend project. It implements the foreground Responses API. It is not a feature-complete replacement for the Python or TypeScript SDKs.
+> Experimental companion v0.1.1 / Bend library v0.1.0. This is a community project, not an official OpenAI or Bend project. It implements the foreground Responses API. It is not a feature-complete replacement for the Python or TypeScript SDKs.
 
 <!-- hub:start -->
 
@@ -57,7 +57,7 @@ The companion is a separate local process. **Installing the Bend Hub package doe
 ```sh
 git clone https://github.com/gouveags/openai-bend.git
 cd openai-bend
-git checkout v0.1.0
+git checkout v0.1.1
 bun install --frozen-lockfile
 ```
 
@@ -75,7 +75,7 @@ bun run bridge
 Expected startup message:
 
 ```text
-openai-bend 0.1.0 listening on 127.0.0.1:42101 (protocol 1)
+openai-bend 0.1.1 listening on 127.0.0.1:42101 (protocol 1)
 ```
 
 Your Bend process needs `OPENAI_BEND_TOKEN`, `OPENAI_BEND_PORT` and your model selection. **It does not need the OpenAI API key.** When using separate terminals, share the same bridge token through your local secret-management mechanism. The bridge does not print credentials.
@@ -208,3 +208,7 @@ The dependency lockfile is committed. Formatting and TypeScript checks are part 
 ## License
 
 MIT. The OpenAI TypeScript SDK is a separately licensed dependency. Bend is a separate project. Contributions and reproducible bug reports are welcome at [GitHub](https://github.com/gouveags/openai-bend/issues).
+
+### Companion 0.1.1
+
+The command-line examples return a nonzero exit status for failed or incomplete responses. SDK diagnostic logging is disabled. This patch uses the same immutable Bend Hub package (library version 0.1.0).

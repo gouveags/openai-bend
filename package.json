@@ -1,6 +1,6 @@
 {
   "name": "openai-bend",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "An unofficial OpenAI SDK for Bend, with typed requests, streaming, and tool calling.",

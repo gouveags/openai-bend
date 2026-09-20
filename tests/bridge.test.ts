@@ -12,7 +12,7 @@ function response(input: unknown) {
   return {
     id: "resp_test",
     object: "response",
-    status: "completed",
+    status: input === "incomplete" ? "incomplete" : "completed",
     model: "mock",
     output: [
       {
@@ -63,7 +63,15 @@ beforeAll(async () => {
           { type: "future.event", new_field: true },
           ...(body.input === "truncated"
             ? []
-            : [{ type: "response.completed", response: response(body.input) }]),
+            : [
+                {
+                  type:
+                    body.input === "incomplete"
+                      ? "response.incomplete"
+                      : "response.completed",
+                  response: response(body.input),
+                },
+              ]),
         ];
         const sse = events
           .map((e) => `event: ${e.type}\ndata: ${JSON.stringify(e)}\n\n`)
@@ -384,6 +392,35 @@ describe("companion with official SDK and real local HTTP upstream", () => {
     ["clean-package JavaScript", ["bun", "build/package-request.js"]],
     ["native", ["build/request"]],
   ] as const) {
+    for (const streaming of [false, true]) {
+      test(`Bend ${backend} rejects ${streaming ? "streaming" : "create"} incomplete output`, async () => {
+        const child = Bun.spawn(
+          [
+            ...command,
+            `failure_${++sequence}`,
+            streaming ? "stream" : "once",
+            JSON.stringify({ model: "mock", input: "incomplete" }),
+          ],
+          {
+            env: {
+              ...Bun.env,
+              OPENAI_BEND_PORT: String(bridge.port),
+              OPENAI_BEND_TOKEN: token,
+            },
+            stdout: "pipe",
+            stderr: "pipe",
+          },
+        );
+        const [out, err, code] = await Promise.all([
+          new Response(child.stdout).text(),
+          new Response(child.stderr).text(),
+          child.exited,
+        ]);
+        expect(code).toBe(1);
+        expect(err).toContain("provider_error");
+        expect(out).not.toContain("finished");
+      }, 20_000);
+    }
     for (const streaming of [false, true]) {
       test(`Bend ${backend} ${streaming ? "streaming" : "create"} end to end`, async () => {
         const process = Bun.spawn(

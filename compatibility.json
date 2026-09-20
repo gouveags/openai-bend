@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "protocol": 1,
   "bend": "2.0.19",
   "bun": "1.4.2",
@@ -8,5 +8,6 @@
   "native_optimization": "-O1",
   "tested_platform": "Linux x86_64",
   "live_openai_tested": false,
-  "bend_hub_hash": "0xda004b6e25aca0ce4a1c90a4af87bee0"
+  "bend_hub_hash": "0xda004b6e25aca0ce4a1c90a4af87bee0",
+  "bend_package_version": "0.1.0"
 }

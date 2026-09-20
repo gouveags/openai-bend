@@ -2,15 +2,33 @@ import Base
 import ../openai.bend as OpenAI
 import ../json.bend as Json
 
+def failed_status(+status: String) -> Bool:
+  String.eq(status, "failed") || String.eq(status, "incomplete")
+
+def provider_failed(+kind: String, data: Json.Json) -> Bool:
+  String.eq(kind, "error") || String.eq(kind, "response.failed") ||
+    String.eq(kind, "response.incomplete") ||
+    (String.eq(kind, "result") && failed_status(OpenAI.field(data, "status")))
+
+def print_event(failed: Bool, stream: OpenAI.Stream, kind: String, data: Json.Json,
+                next: OpenAI.Stream -> IO(Unit)) -> IO(Unit):
+  match failed:
+    case True{}:
+      do IO<Unit>:
+        OpenAI.close(stream)
+        IO.die(Unit, 1, "provider_error: " ++ Json.stringify(data))
+    case False{}:
+      do IO<Unit>:
+        IO.print(kind ++ " " ++ Json.stringify(data))
+        next(stream)
+
 def print_step(step: OpenAI.Step, next: OpenAI.Stream -> IO(Unit)) -> IO(Unit):
   match step:
     case OpenAI.Finished{}: IO.print("finished")
     case OpenAI.Failed{OpenAI.Error{code, message, status, request_id, retry_after}}:
       IO.die(Unit, 1, code ++ ": " ++ message)
-    case OpenAI.Event{stream, kind, data, request_id}:
-      do IO<Unit>:
-        IO.print(kind ++ " " ++ Json.stringify(data))
-        next(stream)
+    case OpenAI.Event{stream, +kind, +data, request_id}:
+      print_event(provider_failed(kind, data), stream, kind, data, next)
 
 @unsafe
 def consume(stream: OpenAI.Stream) -> IO(Unit):
