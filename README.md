@@ -12,13 +12,13 @@ Write your application in Bend. Use OpenAI's official TypeScript SDK for the net
 
 ## Install from Bend Hub
 
-[Package source](https://hub.bend-lang.com/0xda004b6e25aca0ce4a1c90a4af87bee0/openai.bend) · [Verified manifest](https://hub.bend-lang.com/0xda004b6e25aca0ce4a1c90a4af87bee0/manifest) · [Packaged README](https://hub.bend-lang.com/0xda004b6e25aca0ce4a1c90a4af87bee0/docs.bend)
+[Package source](https://hub.bend-lang.com/0x7d1714d98ca88352be07e0302e547a19/openai.bend) · [Verified manifest](https://hub.bend-lang.com/0x7d1714d98ca88352be07e0302e547a19/manifest) · [Packaged README](https://hub.bend-lang.com/0x7d1714d98ca88352be07e0302e547a19/docs.bend)
 
 Use these exact imports in your project:
 
 ```bend
-import 0xda004b6e25aca0ce4a1c90a4af87bee0/openai.bend as OpenAI
-import 0xda004b6e25aca0ce4a1c90a4af87bee0/json.bend as Json
+import 0x7d1714d98ca88352be07e0302e547a19/openai.bend as OpenAI
+import 0x7d1714d98ca88352be07e0302e547a19/json.bend as Json
 ```
 
 Bend downloads and verifies the content-addressed package when you build your program. There is no separate `npm install`-style command for the Bend modules. Install and start the companion below, then compile your app with `bend app.bend -o app.js` and run it with `bun app.js`.

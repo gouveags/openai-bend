@@ -1,3 +1,5 @@
+# An unofficial OpenAI SDK for Bend, with typed requests, streaming, and tool calling.
+
 import Base
 import ./json.bend as J
 import ./transport.bend as T

@@ -6,7 +6,7 @@ const withoutHub = readme.replace(
   "",
 );
 const contents =
-  "import Base\n\n" +
+  "# An unofficial OpenAI SDK for Bend, with typed requests, streaming, and tool calling.\n\nimport Base\n\n" +
   withoutHub
     .split("\n")
     .map((line) => ("# " + line).trimEnd())
