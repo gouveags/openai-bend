@@ -1,0 +1,25 @@
+name: CI
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: 1.4.2
+      - name: Install pinned Bend
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 -fsSL https://github.com/bendlang/bend/releases/download/v2.0.19/bend-2.0.19-linux-x64.tar.gz -o /tmp/bend.tar.gz
+          echo '4f50d0a34283bb4e9ad6277a36fd91ef20c5d8992ca857c8185e605b866425b9  /tmp/bend.tar.gz' | sha256sum -c -
+          mkdir -p "$HOME/.bend"
+          tar -xzf /tmp/bend.tar.gz --strip-components=1 -C "$HOME/.bend"
+      - run: bun install --frozen-lockfile
+      - run: make test
+        env:
+          BEND_NO_TELEMETRY: '1'
+      - run: bun audit
