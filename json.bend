@@ -190,7 +190,7 @@ def string_read(fuel: Nat, s: String, acc: String) -> Result<&1, &1, String, Str
 type NumberState is Data:
   Start{}
   Minus{}
-  Zero{}
+  NumZero{}
   Integer{}
   Dot{}
   Fraction{}
@@ -206,9 +206,9 @@ def select_state(ok: Bool, yes: NumberState, no: NumberState) -> NumberState:
 
 def number_state(state: NumberState, +ch: Char) -> NumberState:
   match state:
-    case Start{}: select_state(Char.is_eq(ch, '-'), Minus{}, select_state(Char.is_eq(ch, '0'), Zero{}, select_state(Char.is_digit(ch), Integer{}, Bad{})))
-    case Minus{}: select_state(Char.is_eq(ch, '0'), Zero{}, select_state(Char.is_digit(ch), Integer{}, Bad{}))
-    case Zero{}: select_state(Char.is_eq(ch, '.'), Dot{}, select_state(Char.is_eq(ch, 'e') || Char.is_eq(ch, 'E'), Exponent{}, Bad{}))
+    case Start{}: select_state(Char.is_eq(ch, '-'), Minus{}, select_state(Char.is_eq(ch, '0'), NumZero{}, select_state(Char.is_digit(ch), Integer{}, Bad{})))
+    case Minus{}: select_state(Char.is_eq(ch, '0'), NumZero{}, select_state(Char.is_digit(ch), Integer{}, Bad{}))
+    case NumZero{}: select_state(Char.is_eq(ch, '.'), Dot{}, select_state(Char.is_eq(ch, 'e') || Char.is_eq(ch, 'E'), Exponent{}, Bad{}))
     case Integer{}: select_state(Char.is_digit(ch), Integer{}, select_state(Char.is_eq(ch, '.'), Dot{}, select_state(Char.is_eq(ch, 'e') || Char.is_eq(ch, 'E'), Exponent{}, Bad{})))
     case Dot{}: select_state(Char.is_digit(ch), Fraction{}, Bad{})
     case Fraction{}: select_state(Char.is_digit(ch), Fraction{}, select_state(Char.is_eq(ch, 'e') || Char.is_eq(ch, 'E'), Exponent{}, Bad{}))
@@ -219,7 +219,7 @@ def number_state(state: NumberState, +ch: Char) -> NumberState:
 
 def number_end(state: NumberState) -> Bool:
   match state:
-    case Zero{}: True{}
+    case NumZero{}: True{}
     case Integer{}: True{}
     case Fraction{}: True{}
     case Digits{}: True{}
