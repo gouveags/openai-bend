@@ -4,7 +4,9 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 const sha = (text: string) => createHash("sha256").update(text).digest("hex");
+const named = "bend-openai-sdk@0.1.0.1";
 const names = [
+  "LICENSE",
   "openai.bend",
   "json.bend",
   "transport.bend",
@@ -24,6 +26,7 @@ const server = Bun.serve({
   hostname: "127.0.0.1",
   fetch(request) {
     const path = new URL(request.url).pathname;
+    if (path === `/name/${named}`) return new Response(hash);
     if (path === `/${hash}/manifest`) return new Response(manifest);
     const name = path.slice(hash.length + 2);
     if (path.startsWith(`/${hash}/`) && files.has(name))
@@ -36,7 +39,7 @@ try {
   await mkdir("build", { recursive: true });
   await Bun.write(
     join(directory, "consumer.bend"),
-    `import Base\nimport ${hash}/openai.bend as OpenAI\nimport ${hash}/json.bend as Json\n\ndef main() -> IO(Unit):\n  IO.print(OpenAI.repository() ++ " " ++ Json.stringify(OpenAI.params(OpenAI.text_request("mock", "hello"))))\n`,
+    `import Base\nimport ${named}/openai.bend as OpenAI\nimport ${named}/json.bend as Json\n\ndef main() -> IO(Unit):\n  IO.print(OpenAI.repository() ++ " " ++ Json.stringify(OpenAI.params(OpenAI.text_request("mock", "hello"))))\n`,
   );
   const output = resolve("build/package-consumer.js");
   const child = Bun.spawn(
@@ -60,8 +63,8 @@ try {
   if ((await child.exited) !== 0)
     throw new Error("Clean package import failed");
   const requestSource = (await Bun.file("examples/request.bend").text())
-    .replace("../openai.bend", `${hash}/openai.bend`)
-    .replace("../json.bend", `${hash}/json.bend`);
+    .replace("../openai.bend", `${named}/openai.bend`)
+    .replace("../json.bend", `${named}/json.bend`);
   const requestFile = join(directory, "request.bend");
   await Bun.write(requestFile, requestSource);
   const requestBuild = Bun.spawn(

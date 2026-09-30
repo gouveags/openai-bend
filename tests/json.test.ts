@@ -44,6 +44,57 @@ describe("Bend JSON codec", () => {
       '{"n":9007199254740993,"f":-0.1234567890123456789e+123}',
     );
   });
+  // Exercise every accepting transition through the zero-number parser state.
+  // Compare text directly so negative zero and decimal precision cannot be lost.
+  for (const number of [
+    "0",
+    "-0",
+    "0.0",
+    "-0.0",
+    "0.001",
+    "-0.001",
+    "0e0",
+    "0E0",
+    "0e+1",
+    "0E-1",
+    "-0e+10",
+    "-0E-10",
+    "0.125e+123",
+    "-0.1234567890123456789e-123",
+    "10",
+    "9007199254740993",
+  ]) {
+    test(`preserve number lexeme ${number}`, () => {
+      for (const input of [number, `[${number}]`, `{"n":${number}}`]) {
+        const result = run(input);
+        expect(result.exitCode).toBe(0);
+        expect(result.stdout.toString().trim()).toBe(input);
+      }
+    });
+  }
+  for (const number of [
+    "00",
+    "-00",
+    "-01",
+    "00.1",
+    "01e2",
+    "0x10",
+    ".0",
+    "-.0",
+    "0.",
+    "-0.",
+    "0e",
+    "0e+",
+    "0E-",
+    "0.e1",
+    "0e1.0",
+  ]) {
+    test(`reject invalid zero-number lexeme ${number}`, () => {
+      for (const input of [number, `[${number}]`, `{"n":${number}}`]) {
+        expect(run(input).exitCode).not.toBe(0);
+      }
+    });
+  }
   test("surrogate pairs from the ASCII wire", () => {
     expect(JSON.parse(run('"\\ud83d\\ude00"').stdout.toString())).toBe("😀");
   });

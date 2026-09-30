@@ -9,7 +9,8 @@
     "test": "bun test tests",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write bridge tests scripts package.json tsconfig.json README.md",
-    "format:check": "prettier --check bridge tests scripts package.json tsconfig.json README.md"
+    "format:check": "prettier --check bridge tests scripts package.json tsconfig.json README.md",
+    "test:live": "bun scripts/live-smoke.ts"
   },
   "dependencies": {
     "openai": "7.20.0"
