@@ -227,6 +227,8 @@ import Base
 #
 # This makes two billed requests (JavaScript nonstreaming and native streaming), each limited to 64 output tokens with retries disabled. It checks the actual reply and completion status. Regular `make test` uses local mocks and does not call a paid API. Provider keys are never needed by the release workflow.
 #
+# Live smoke validation on September 30, 2026 passed with `gpt-4.1-nano`: both the JavaScript nonstreaming and native streaming clients received a completed `SDK_OK` reply. This verifies basic real-provider integration, not every model or API feature.
+#
 
 def repository() -> String:
   "https://github.com/gouveags/openai-bend"

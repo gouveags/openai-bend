@@ -7,10 +7,12 @@
   "clang_tested": "21.1.8",
   "native_optimization": "-O1",
   "tested_platform": "Linux x86_64",
-  "live_openai_tested": false,
-  "bend_hub_hash": "0x771a28f0be7befe60b955c6f89acf1c3",
+  "live_openai_tested": true,
+  "bend_hub_hash": "0xbfb6718181103ac566eb0ff5308d47ac",
   "bend_package_version": "0.1.0",
   "bend_hub_name": "bend-openai-sdk",
   "bend_hub_version": "0.1.0.1",
-  "previous_bend_hub_hash": "0x068889b451dd1a424d85a23af12e82c1"
+  "previous_bend_hub_hash": "0x068889b451dd1a424d85a23af12e82c1",
+  "live_smoke_model": "gpt-4.1-nano",
+  "live_smoke_date": "2026-09-30"
 }
