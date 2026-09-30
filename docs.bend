@@ -8,10 +8,24 @@ import Base
 #
 # Write your application in Bend. Use OpenAI's official TypeScript SDK for the network connection. A small, authenticated companion process connects the two over localhost.
 #
-# [Examples](./examples) · [Source](https://github.com/gouveags/openai-bend) · [Report an issue](https://github.com/gouveags/openai-bend/issues)
+# [Examples](https://github.com/gouveags/openai-bend/tree/main/examples) · [Source](https://github.com/gouveags/openai-bend) · [Report an issue](https://github.com/gouveags/openai-bend/issues) · [Anthropic companion project](https://github.com/gouveags/anthropic-bend)
 #
-# > Experimental v0.1.0. This is a community project, not an official OpenAI or Bend project. It implements the foreground Responses API. It is not a feature-complete replacement for the Python or TypeScript SDKs.
+# > Experimental companion v0.1.1 / Bend library v0.1.0. This is a community project, not an official OpenAI or Bend project. It implements the foreground Responses API. It is not a feature-complete replacement for the Python or TypeScript SDKs.
 #
+# ## Install from Bend Hub
+#
+# [**bend-openai-sdk@0.1.0.1**](https://hub.bend-lang.com/n/bend-openai-sdk) · [Packaged documentation](https://github.com/gouveags/openai-bend/blob/main/docs.bend) · [Source and examples](https://github.com/gouveags/openai-bend)
+#
+# Use **Bend 2.0.34 or newer** for named imports. Bend fetches the exact release, resolves it to an immutable content hash, and verifies the downloaded files. There is no separate install command for the Bend modules.
+#
+# ```bend
+# import bend-openai-sdk@0.1.0.1/openai.bend as OpenAI
+# import bend-openai-sdk@0.1.0.1/json.bend as Json
+# ```
+#
+# Install and start the localhost companion below as well: the Hub package contains the Bend modules, documentation and MIT license, not the Bun companion or its dependencies. Provider API keys stay in the companion process.
+#
+# Release `0.1.0.1` fixes the JSON parser constructor collision with Bend 2.0.28+ and updates the example CLIs for Bend 2.0.34. The SDK API and bridge protocol are unchanged. Existing imports of the [previous hash](https://hub.bend-lang.com/0x7d1714d98ca88352be07e0302e547a19) remain available, but require the older compiler they were published with. Use `0.1.0.1` on current Bend. Published versions are immutable; future updates use a new version.
 #
 # ## What you get
 #
@@ -33,7 +47,7 @@ import Base
 # ## Requirements
 #
 # - Linux or macOS. The tested platform is Linux x86_64; macOS is not yet validated.
-# - [Bend 2](https://github.com/bendlang/bend), [Bun](https://bun.sh/), and Git.
+# - [Bend 2.0.34+](https://github.com/bendlang/bend), [Bun](https://bun.sh/), and Git.
 # - Clang 14+ and Make for native builds.
 # - An OpenAI API key and access to your selected model for real inference.
 #
@@ -44,7 +58,7 @@ import Base
 # ```sh
 # git clone https://github.com/gouveags/openai-bend.git
 # cd openai-bend
-# git checkout v0.1.0
+# git checkout main
 # bun install --frozen-lockfile
 # ```
 #
@@ -62,7 +76,7 @@ import Base
 # Expected startup message:
 #
 # ```text
-# openai-bend 0.1.0 listening on 127.0.0.1:42101 (protocol 1)
+# openai-bend 0.1.1 listening on 127.0.0.1:42101 (protocol 1)
 # ```
 #
 # Your Bend process needs `OPENAI_BEND_TOKEN`, `OPENAI_BEND_PORT` and your model selection. **It does not need the OpenAI API key.** When using separate terminals, share the same bridge token through your local secret-management mechanism. The bridge does not print credentials.
@@ -119,7 +133,7 @@ import Base
 #
 # Call `OpenAI.close(stream)` if you stop consuming early. To cancel a blocked request from another Bend computation, use `OpenAI.cancel(client, request_id)`. Cancellation requests an upstream abort; it cannot guarantee that remote processing or billing has not already happened.
 #
-# See [the complete reader](./examples/request.bend), [hello](./examples/hello.bend), [structured outputs](./examples/structured.bend), [tools](./examples/tools.bend), and [cancellation](./examples/cancel.bend). All examples read `OPENAI_BEND_PORT` and `OPENAI_BEND_TOKEN`.
+# See [the complete reader](https://github.com/gouveags/openai-bend/blob/main/examples/request.bend), [hello](https://github.com/gouveags/openai-bend/blob/main/examples/hello.bend), [structured outputs](https://github.com/gouveags/openai-bend/blob/main/examples/structured.bend), [tools](https://github.com/gouveags/openai-bend/blob/main/examples/tools.bend), and [cancellation](https://github.com/gouveags/openai-bend/blob/main/examples/cancel.bend). All examples read `OPENAI_BEND_PORT` and `OPENAI_BEND_TOKEN`.
 #
 # ## Structured outputs and tools
 #
@@ -179,7 +193,7 @@ import Base
 #
 # Tests use the actual OpenAI TypeScript SDK against a local HTTP mock, plus real TCP connections and compiled Bend clients. They require no real API key and make no inference requests to OpenAI. A successful local mock run proves protocol and integration behavior, not model behavior or account access.
 #
-# The dependency lockfile is committed. Formatting and TypeScript checks are part of `make test`. See `compatibility.json` for the pinned compiler, companion protocol and SDK versions.
+# The dependency lockfile is committed. Formatting and TypeScript checks are part of `make test`. See [compatibility.json](https://github.com/gouveags/openai-bend/blob/main/compatibility.json) for the pinned compiler, companion protocol and SDK versions.
 #
 # ## Troubleshooting
 #
@@ -195,6 +209,23 @@ import Base
 # ## License
 #
 # MIT. The OpenAI TypeScript SDK is a separately licensed dependency. Bend is a separate project. Contributions and reproducible bug reports are welcome at [GitHub](https://github.com/gouveags/openai-bend/issues).
+#
+# ### Companion 0.1.1
+#
+# The command-line examples return a nonzero exit status for failed or incomplete responses. SDK diagnostic logging is disabled. This companion patch retains the library API from v0.1.0 and works with the named Hub release above.
+#
+# ## Releases and live validation
+#
+# [Release workflow and credential renewal](https://github.com/gouveags/openai-bend/blob/main/docs/releasing.md). New Hub versions publish automatically after their version bump lands on `main` and CI succeeds.
+#
+# For an explicitly authorized real-provider check, load your API key into the environment securely, build with the compiler in `compatibility.json`, then run:
+#
+# ```sh
+# make build
+# SDK_LIVE_TEST=1 bun run test:live
+# ```
+#
+# This makes two billed requests (JavaScript nonstreaming and native streaming), each limited to 64 output tokens with retries disabled. It checks the actual reply and completion status. Regular `make test` uses local mocks and does not call a paid API. Provider keys are never needed by the release workflow.
 #
 
 def repository() -> String:

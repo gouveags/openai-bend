@@ -53,7 +53,7 @@ def body_read(result: Result<&1, &1, String, Json.Json>, port: U32, token: Strin
 
 def port_read(port: Maybe<&2, U32>, token: String, args: List<&1, String>) -> IO(Unit):
   match port args:
-    case Some{port} Con{id, Con{stream, Con{json, Nil{}}}}:
+    case Some{port} Con{_, Con{id, Con{stream, Con{json, Nil{}}}}}:
       body_read(Json.read(json), port, token, id, String.eq(stream, "stream"))
     case _ _: IO.die(Unit, 1, "Usage: request REQUEST_ID stream|once JSON (set OPENAI_BEND_PORT and OPENAI_BEND_TOKEN)")
 

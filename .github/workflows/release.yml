@@ -1,0 +1,54 @@
+name: Release to Bend Hub
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: bend-hub-release
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6
+        with:
+          bun-version: 1.4.2
+      - name: Require intentional version increase
+        id: release
+        run: bun scripts/release.ts --plan
+      - name: Install pinned Bend
+        if: steps.release.outputs.needed == 'true'
+        shell: bash
+        run: |
+          curl --proto '=https' --tlsv1.2 --connect-timeout 15 --max-time 120 -fsSL https://github.com/bendlang/bend/releases/download/v2.0.34/bend-2.0.34-linux-x64.tar.gz -o /tmp/bend.tar.gz
+          echo '78106a97af242429dcc057258eb8d10f69cddebcd5e263022185a52d003e09bf  /tmp/bend.tar.gz' | sha256sum -c -
+          mkdir -p "$HOME/.bend"
+          tar -xzf /tmp/bend.tar.gz --strip-components=1 -C "$HOME/.bend"
+      - name: Rebuild and verify package from tested sources
+        if: steps.release.outputs.needed == 'true'
+        run: make package-check
+        env:
+          BEND_NO_TELEMETRY: "1"
+      - name: Publish and verify public version
+        if: steps.release.outputs.needed == 'true'
+        run: bun scripts/release.ts
+        env:
+          BEND_HUB_TOKEN: ${{ secrets.BEND_HUB_TOKEN }}
+          BEND_NO_TELEMETRY: "1"
+      - name: Remove temporary Hub credentials
+        if: always()
+        run: rm -f "$HOME/.bend/bender.json"

@@ -1,13 +1,16 @@
 {
   "version": "0.1.1",
   "protocol": 1,
-  "bend": "2.0.19",
+  "bend": "2.0.34",
   "bun": "1.4.2",
   "openai": "7.20.0",
   "clang_tested": "21.1.8",
   "native_optimization": "-O1",
   "tested_platform": "Linux x86_64",
   "live_openai_tested": false,
-  "bend_hub_hash": "0x7d1714d98ca88352be07e0302e547a19",
-  "bend_package_version": "0.1.0"
+  "bend_hub_hash": "0x771a28f0be7befe60b955c6f89acf1c3",
+  "bend_package_version": "0.1.0",
+  "bend_hub_name": "bend-openai-sdk",
+  "bend_hub_version": "0.1.0.1",
+  "previous_bend_hub_hash": "0x068889b451dd1a424d85a23af12e82c1"
 }

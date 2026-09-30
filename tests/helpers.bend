@@ -14,7 +14,7 @@ def parsed(result: Result<&1, &1, String, Json.Json>) -> IO(Unit):
 
 def argument(args: List<&1, String>) -> IO(Unit):
   match args:
-    case Con{s, Nil{}}: parsed(Json.read(s))
+    case Con{_, Con{s, Nil{}}}: parsed(Json.read(s))
     case _: IO.die(Unit, 1, "expected response JSON")
 
 def main() -> IO(Unit):
